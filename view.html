@@ -1,0 +1,33 @@
+<!-- Primary template that will get shown when widget loads -->
+<script type="text/ng-template" id="countdownMain.html"> 
+	<widget-row>
+		<widget-cell>
+			<h2>00:00</h2>
+            Until ___
+		</widget-cell>
+     	<wc>
+        	<h2>00:00</h2>
+            Until ___
+        </wc>
+	</widget-row>
+		
+	<widget-row ng-repeat="item in countdowns.value" clickable ng-click="showDetails(item)">
+		<widget-cell fill>
+			<div class="itemName">{{item.name}}</div>
+            <div class="pDetails">{{item.remaining}}</div>
+		</widget-cell>
+		<widget-cell>
+			<widget-icon name="angle-right"></widget-icon>
+		</widget-cell>
+	</widget-row>
+</script>
+
+<!-- This template gets shown when user clicks one of the items in the list -->
+<script type="text/ng-template" id="countdownDetails.html"> 
+	<!-- 'wr' and 'wc' are short for 'widget-row' and 'widget-cell' -->
+	<wr>
+		<wc><h2>{{detailsItem.value.title}}</h2></wc>
+	</wr>
+	<wr><wc><span ng-repeat= "tag in detailsItem.value.tags" class="label label-success">{{tag}}</span></wc></wr>
+	<wr><wc><div class="pDetails">{{detailsItem.value.details}}</div></wc></wr>
+</script>
