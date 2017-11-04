@@ -15,30 +15,33 @@ angular.module('portalApp')
         // Show main view in the first column
         $scope.portalHelpers.showView('countdownMain.html', 1);
 
+    	$scope.formatDate = function(deadline){
+            var t = Date.parse(deadline) - Date.parse(new Date());
+            var seconds = Math.floor((t / 1000) % 60);
+            var minutes = Math.floor((t / 1000 / 60) % 60);
+            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+            var days = Math.floor(t / (1000 * 60 * 60 * 24));
+
+            var time = "";
+            if (t < 0) {
+                time = "Passed";
+            } else if (days > 0) {
+                time += days + " days";
+                if (hours > 0) time += ", " + hours + "hours";
+            } else if (hours > 0) {
+                time += hours + " hours" + minutes + "minutes";
+            } else if (minutes > 0) {
+                time += minutes + " minutes";
+            } else {
+                time += seconds + " seconds";
+            }
+            return time;
+        }
 
         $scope.updateCountdown = function() {
             for (var i = 0; i < $scope.countdowns.value.length; i++) {
                 var countdown = $scope.countdowns.value[i];
-                var t = Date.parse(countdown.deadline) - Date.parse(new Date());
-                var seconds = Math.floor((t / 1000) % 60);
-                var minutes = Math.floor((t / 1000 / 60) % 60);
-                var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-                var days = Math.floor(t / (1000 * 60 * 60 * 24));
-
-                var time = "";
-                if (t < 0){
-                    time = "Passed";
-                }else if (days > 0) {
-                    time += days + " days";
-                    if (hours > 0) time += ", " + hours + "hours";
-                }else if(hours > 0){
-                    time += hours + " hours" + minutes + "minutes";
-                }else if(minutes > 0){
-                    time += minutes + " minutes";
-                }else{
-                    time += seconds + " seconds";
-                }
-                countdown.remaining = time;
+                countdown.remaining = $scope.formatDate(countdown.deadline);
             }
         }
         $interval($scope.updateCountdown, 1000);
@@ -47,6 +50,9 @@ angular.module('portalApp')
             // Make the item that user clicked available to the template
             $scope.detailsItem.value = item;
             $scope.portalHelpers.showView('countdownDetails.html', 2);
+        }
+        $scope.toggleFavorite = function(item){
+         	item.favorite = item.favorite?false:true;   
         }
 
     }])
@@ -81,7 +87,7 @@ angular.module('portalApp')
             };
             countdowns.value = [{
                     name: 'Item 1',
-                    deadline: new Date(Date.now()+480000),
+                    deadline: new Date(Date.now() + 480000),
                     remaining: "Loading..."
                 },
 
