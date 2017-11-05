@@ -27,9 +27,9 @@ angular.module('portalApp')
                 time = "Passed";
             } else if (days > 0) {
                 time += days + " days";
-                if (hours > 0) time += ", " + hours + "hours";
+                if (days < 7 && hours > 0) time += ", " + hours + " hours";
             } else if (hours > 0) {
-                time += hours + " hours" + minutes + "minutes";
+                time += hours + " hours," + minutes + " minutes";
             } else if (minutes > 0) {
                 time += minutes + " minutes";
             } else {
@@ -45,6 +45,10 @@ angular.module('portalApp')
             }
         }
         $interval($scope.updateCountdown, 1000);
+    
+    	$scope.createNew = function(){
+            $scope.portalHelpers.showView('countdownNew.html', 2);
+        }
         // This function gets called when user clicks an item in the list
         $scope.showDetails = function(item) {
             // Make the item that user clicked available to the template
@@ -55,18 +59,23 @@ angular.module('portalApp')
             item.favorite = item.favorite ? false : true;
             $scope.syncData();
         }
+        $scope.createCountdown = function(item){
+            $scope.countdowns.value.push(item);
+            $scope.syncData();
+            $scope.portalHelpers.showView('countdownMain.html', 1);
+        }
 		$scope.deleteCountdown = function(item){
             $scope.countdowns.value.splice($scope.countdowns.value.indexOf(item),1);
             $scope.syncData();
+            $scope.portalHelpers.showView('countdownMain.html', 1);
         }
         if (typeof pouchService.widgetData['countdown'] != 'undefined') {
-            $scope.countdowns.value = pouchService.widgetData['countdown'][0].value;
-            console.log(pouchService.widgetData['countdown'][0].value);
+            $scope.countdowns.value = pouchService.widgetData['countdown'].find((e)=>(e._id=="countdown-countdowns")).value;
         } else {
             pouchService.widgetData['countdown'] = [];
         }
         $scope.data = pouchService.widgetData['countdown'];
-
+		
         $scope.syncData = function() {
             $rootScope.pouchDbLocal.get('countdown-countdowns').then(
                 function(doc) {
@@ -97,9 +106,9 @@ angular.module('portalApp')
         $scope.$watch('data', function() {
             if ($scope.data.length == 0)
                 return;
-
+			console.log($scope.data)
             // update checkbox state
-            $scope.countdowns.value = $scope.data[0].value;
+            $scope.countdowns.value = $scope.data.find((e)=>(e._id=="countdown-countdowns")).value;
         }, true);
     }])
     // Factory maintains the state of the widget
@@ -131,11 +140,7 @@ angular.module('portalApp')
             data.value = {
                 message: "Welcome to Portal SDK!"
             };
-            countdowns.value = [{
-                name: 'Item 1',
-                deadline: new Date(Date.now() + 480000),
-                remaining: "Loading..."
-            }, ];
+            countdowns.value = [];
         }
 
 
