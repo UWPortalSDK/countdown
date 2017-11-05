@@ -1,8 +1,8 @@
 angular.module('portalApp')
 
 // Widget controller - runs every time widget is shown
-.controller('countdownCtrl', ['$scope', '$http', '$interval', '$q', 'countdownFactory', function($scope, $http, $interval, $q, countdownFactory) {
-
+.controller('countdownCtrl', ['$scope', '$http', '$interval', '$q', 'countdownFactory', 'pouchService', '$rootScope', function($scope, $http, $interval, $q, countdownFactory, pouchService, $rootScope) {
+		
         // Import variables and functions from service
         $scope.data = countdownFactory.data;
         $scope.countdowns = countdownFactory.countdowns;
@@ -15,7 +15,7 @@ angular.module('portalApp')
         // Show main view in the first column
         $scope.portalHelpers.showView('countdownMain.html', 1);
 
-    	$scope.formatDate = function(deadline){
+        $scope.formatDate = function(deadline) {
             var t = Date.parse(deadline) - Date.parse(new Date());
             var seconds = Math.floor((t / 1000) % 60);
             var minutes = Math.floor((t / 1000 / 60) % 60);
@@ -51,10 +51,56 @@ angular.module('portalApp')
             $scope.detailsItem.value = item;
             $scope.portalHelpers.showView('countdownDetails.html', 2);
         }
-        $scope.toggleFavorite = function(item){
-         	item.favorite = item.favorite?false:true;   
+        $scope.toggleFavorite = function(item) {
+            item.favorite = item.favorite ? false : true;
+            $scope.syncData();
+        }
+		$scope.deleteCountdown = function(item){
+            $scope.countdowns.value.splice($scope.countdowns.value.indexOf(item),1);
+            $scope.syncData();
+        }
+        if (typeof pouchService.widgetData['countdown'] != 'undefined') {
+            $scope.countdowns.value = pouchService.widgetData['countdown'][0].value;
+            console.log(pouchService.widgetData['countdown'][0].value);
+        } else {
+            pouchService.widgetData['countdown'] = [];
+        }
+        $scope.data = pouchService.widgetData['countdown'];
+
+        $scope.syncData = function() {
+            $rootScope.pouchDbLocal.get('countdown-countdowns').then(
+                function(doc) {
+                    doc.value = $scope.countdowns.value;
+                    $rootScope.pouchDbLocal.put(doc).then(function(succ) {
+                        console.log('put success: ', succ);
+                    }, function(fail) {
+                        console.log('put fail: ', fail);
+                    });
+                },
+                function(err) {
+                    if (err.status == 404) {
+                        $rootScope.pouchDbLocal.put({
+                            _id: 'countdown-countdowns',
+                            widget: 'countdown',
+                            value: $scope.countdowns.value
+                        }).then(function(succ) {
+                            console.log('put success: ', succ);
+                        }, function(fail) {
+                            console.log('put fail: ', fail);
+                        });
+                    }
+                }
+            );
         }
 
+        // watch for changes in data: this allows us to handle changes made on another client
+        $scope.$watch('data', function() {
+            if ($scope.data.length == 0)
+                return;
+
+            // update checkbox state
+            $scope.countdowns.value = $scope.data[0].value;
+        }, true);
     }])
     // Factory maintains the state of the widget
     .factory('countdownFactory', ['$http', '$rootScope', '$filter', '$q', function($http, $rootScope, $filter, $q) {
@@ -86,12 +132,10 @@ angular.module('portalApp')
                 message: "Welcome to Portal SDK!"
             };
             countdowns.value = [{
-                    name: 'Item 1',
-                    deadline: new Date(Date.now() + 480000),
-                    remaining: "Loading..."
-                },
-
-            ];
+                name: 'Item 1',
+                deadline: new Date(Date.now() + 480000),
+                remaining: "Loading..."
+            }, ];
         }
 
 

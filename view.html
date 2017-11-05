@@ -1,3 +1,4 @@
+
 <!-- Primary template that will get shown when widget loads -->
 <script type="text/ng-template" id="countdownMain.html">
     <widget-row>
@@ -15,6 +16,11 @@
             <widget-icon name="angle-right"></widget-icon>
         </widget-cell>
     </widget-row>
+    <wr ng-if="countdowns.value.length == 0">
+        <wc>
+           
+            <wr
+    </wr>
 </script>
 
 <!-- This template gets shown when user clicks one of the items in the list -->
@@ -24,9 +30,11 @@
         <wc fill>
             <h2>{{detailsItem.value.name}}</h2>
         </wc>
+        <wc clickable ng-click="deleteCountdown(detailsItem.value)">
+            <widget-icon name="trash-empty"></widget-icon>
+        </wc>
         <wc clickable ng-click="toggleFavorite(detailsItem.value)">
-            <widget-icon name="star-empty" ng-hide="detailsItem.value.favorite"></widget-icon>
-            <widget-icon name="star" ng-show="detailsItem.value.favorite"></widget-icon>
+            <widget-icon name="{{detailsItem.value.favorite?'star':'star-empty'}}"></widget-icon>
         </wc>
     </wr>
     <wr>

@@ -1,15 +1,13 @@
 <!-- Primary template that will get shown when widget loads -->
 <script type="text/ng-template" id="countdownMain.html"> 
-	<div class="item">
-		<h2>{{data.value.message}}</h2>
+	<div class="item" ng-repeat="item in countdowns.value | filter: {favorite: true}" clickable ng-click="showDetails(item)">
+		<h2>{{item.remaining}}</h2> {{item.name}}
 	</div>
 		
-	<div class="item item-text-wrap item-icon-right" ng-repeat="item in items.value" ng-click="showDetails(item)">
-		<span class="itemName">{{item.title}}</span>
+	<div class="item" ng-repeat="item in countdowns.value" clickable ng-click="showDetails(item)">
+        <span class="itemName">{{item.name}}</span>
 		<p>
-			<span ng-repeat= "tag in item.tags">
-				[{{tag}}]
-			</span>
+            <span class="pDetails">{{item.remaining}}</span>
 		</p>
 	
 		 <i class="ion-chevron-right icon"></i>
