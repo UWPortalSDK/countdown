@@ -1,4 +1,3 @@
-
 <!-- Primary template that will get shown when widget loads -->
 <script type="text/ng-template" id="countdownMain.html">
     <widget-row>
@@ -6,7 +5,13 @@
             <h2>{{item.remaining}}</h2> {{item.name}}
         </widget-cell>
     </widget-row>
-    
+    <wr>
+        <wc fill>
+            <div ng-click="createNew()" class="btn btn-primary">
+                Create New Countdown
+            </div>
+        </wc>
+    </wr>
     <widget-row ng-repeat="item in countdowns.value" clickable ng-click="showDetails(item)">
         <widget-cell fill>
             <div class="itemName">{{item.name}}</div>
@@ -16,11 +21,34 @@
             <widget-icon name="angle-right"></widget-icon>
         </widget-cell>
     </widget-row>
-    <wr ng-if="countdowns.value.length == 0">
-        <wc>
-           
-            <wr
-    </wr>
+</script>
+
+<script type="text/ng-template" id="countdownNew.html">
+    <widget-row>
+        <widget-cell>
+            <h2>Create New Countdown</h2>
+        </widget-cell>
+    </widget-row>
+
+    <widget-row>
+        <widget-cell>
+            <div class="form-group">
+                <label for="countdownName">Name</label>
+                <input type="text" ng-model="newCountdown.name" class="form-control" id="countdownName" placeholder="Name" />
+            </div>
+            <div class="form-group">
+                <label for="countdownDate">Date</label>
+                <input type="date" ng-model="newCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+            </div>
+            <div class="form-group">
+                <label for="countdownTime">Time</label>
+                <input type="time" ng-model="newCountdown.deadline" class="form-control" id="countdownTime" placeholder="Time" />
+            </div>
+            <div class="form-group">
+                <button ng-click="createCountdown(newCountdown)" class="btn btn-primary">Create</button>
+            </div>
+        </widget-cell>
+    </widget-row>
 </script>
 
 <!-- This template gets shown when user clicks one of the items in the list -->
