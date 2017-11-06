@@ -66,20 +66,18 @@ angular.module('portalApp')
         }
 		$scope.editCountdown = function(item){
             $scope.portalHelpers.showView('countdownEdit.html', 2);
-            $scope.editCountdown={
-                id: item.id,
-                name: item.name,
-                deadline: new Date(item.deadline),           
-            }
+            $scope.original = Object.assign({}, item);
+            $scope.countdownEdit = item;
+            $scope.countdownEdit.deadline = new Date(item.deadline);     
         }
         $scope.saveEdit = function(item){
-            $scope.countdowns.value.splice($scope.countdowns.value.findIndex((x)=>(x.id==item.id)), 1, item);
-            $scope.detailsItem.value = item;
+            var index = $scope.countdowns.value.findIndex((x)=>(x.id==item.id));
+            $scope.countdowns.value.splice(index, 1, item);
+            $scope.showDetails(item);
             $scope.syncData();
-           	$scope.portalHelpers.showView('countdownDetails.html', 2);
         };
    		$scope.cancelEdit = function(item){
-            $scope.editCountdown = {};
+           	Object.assign($scope.countdownEdit, $scope.original);
             $scope.portalHelpers.showView('countdownDetails.html', 2);
         };
 		$scope.deleteCountdown = function(item){
