@@ -2,9 +2,8 @@ angular.module('portalApp')
 
 // Widget controller - runs every time widget is shown
 .controller('countdownCtrl', ['$scope', '$http', '$interval', '$q', 'countdownFactory', 'pouchService', '$rootScope', function($scope, $http, $interval, $q, countdownFactory, pouchService, $rootScope) {
-		
+
         // Import variables and functions from service
-        $scope.data = countdownFactory.data;
         $scope.countdowns = countdownFactory.countdowns;
         $scope.detailsItem = countdownFactory.detailsItem;
 
@@ -46,11 +45,11 @@ angular.module('portalApp')
             }
         }
         $interval($scope.updateCountdown, 1000);
-    
-        $scope.createNew = function(){
+
+        $scope.createNew = function() {
             $scope.portalHelpers.showView('countdownNew.html', 2);
         }
-        $scope.createCountdown = function(item){
+        $scope.createCountdown = function(item) {
             item.id = Date.now();
             $scope.countdowns.value.push(item);
             $scope.syncData();
@@ -64,34 +63,34 @@ angular.module('portalApp')
             item.favorite = item.favorite ? false : true;
             $scope.syncData();
         }
-		$scope.editCountdown = function(item){
+        $scope.editCountdown = function(item) {
             $scope.portalHelpers.showView('countdownEdit.html', 2);
             $scope.original = Object.assign({}, item);
             $scope.countdownEdit = item;
-            $scope.countdownEdit.deadline = new Date(item.deadline);     
+            $scope.countdownEdit.deadline = new Date(item.deadline);
         }
-        $scope.saveEdit = function(item){
-            var index = $scope.countdowns.value.findIndex((x)=>(x.id==item.id));
+        $scope.saveEdit = function(item) {
+            var index = $scope.countdowns.value.findIndex((x) => (x.id == item.id));
             $scope.countdowns.value.splice(index, 1, item);
             $scope.showDetails(item);
             $scope.syncData();
         };
-   		$scope.cancelEdit = function(item){
-           	Object.assign($scope.countdownEdit, $scope.original);
+        $scope.cancelEdit = function(item) {
+            Object.assign($scope.countdownEdit, $scope.original);
             $scope.portalHelpers.showView('countdownDetails.html', 2);
         };
-		$scope.deleteCountdown = function(item){
-            $scope.countdowns.value.splice($scope.countdowns.value.indexOf(item),1);
+        $scope.deleteCountdown = function(item) {
+            $scope.countdowns.value.splice($scope.countdowns.value.indexOf(item), 1);
             $scope.syncData();
             $scope.portalHelpers.showView('countdownMain.html', 1);
         }
         if (typeof pouchService.widgetData['countdown'] != 'undefined') {
-            $scope.countdowns.value = pouchService.widgetData['countdown'].find((e)=>(e._id=="countdown-countdowns")).value;
+            $scope.countdowns.value = pouchService.widgetData['countdown'].find((e) => (e._id == "countdown-countdowns")).value;
         } else {
             pouchService.widgetData['countdown'] = [];
         }
         $scope.data = pouchService.widgetData['countdown'];
-		
+
         $scope.syncData = function() {
             $rootScope.pouchDbLocal.get('countdown-countdowns').then(
                 function(doc) {
@@ -122,9 +121,8 @@ angular.module('portalApp')
         $scope.$watch('data', function() {
             if ($scope.data.length == 0)
                 return;
-			console.log($scope.data)
-            // update checkbox state
-            $scope.countdowns.value = $scope.data.find((e)=>(e._id=="countdown-countdowns")).value;
+            console.log($scope.data)
+            $scope.countdowns.value = $scope.data.find((e) => (e._id == "countdown-countdowns")).value;
         }, true);
     }])
     // Factory maintains the state of the widget
@@ -134,14 +132,10 @@ angular.module('portalApp')
             value: false
         };
 
-        // Your variable declarations
-        var data = {
-            value: null
-        };
+
         var detailsItem = {
             value: null
         };
-        // mock data
         var countdowns = {
             value: null
         };
@@ -153,9 +147,7 @@ angular.module('portalApp')
             initialized.value = true;
 
             // Place your init code here:
-            data.value = {
-                message: "Welcome to Portal SDK!"
-            };
+
             countdowns.value = [];
         }
 
@@ -163,25 +155,8 @@ angular.module('portalApp')
         // Expose init(), and variables
         return {
             init: init,
-            data: data,
             detailsItem: detailsItem,
             countdowns: countdowns
         };
 
-    }])
-    // Custom directive example
-    .directive('countdownDirectiveName', ['$http', function($http) {
-        return {
-            link: function(scope, el, attrs) {
-
-            }
-        };
-    }])
-    // Custom filter example
-    .filter('countdownFilterName', function() {
-        return function(input, arg1, arg2) {
-            // Filter your output here by iterating over input elements
-            var output = input;
-            return output;
-        }
-    });
+    }]);
