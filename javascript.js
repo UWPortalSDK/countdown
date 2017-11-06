@@ -1,11 +1,12 @@
 angular.module('portalApp')
 
 // Widget controller - runs every time widget is shown
-.controller('countdownCtrl', ['$scope', '$http', '$interval', '$q', 'countdownFactory', 'pouchService', '$rootScope', function($scope, $http, $interval, $q, countdownFactory, pouchService, $rootScope) {
+.controller('countdownCtrl', ['$scope', '$http', '$interval', '$q', 'countdownFactory', '$rootScope', function($scope, $http, $interval, $q, countdownFactory, $rootScope) {
 
         // Import variables and functions from service
         $scope.countdowns = countdownFactory.countdowns;
         $scope.detailsItem = countdownFactory.detailsItem;
+        $scope.updateCountdown = countdownFactory.updateCountdown;
 
 
         // initialize the service
@@ -14,36 +15,6 @@ angular.module('portalApp')
         // Show main view in the first column
         $scope.portalHelpers.showView('countdownMain.html', 1);
 
-        $scope.formatDate = function(countdown) {
-            var t = Date.parse(countdown.deadline) - Date.parse(new Date());
-            var seconds = Math.floor((t / 1000) % 60);
-            var minutes = Math.floor((t / 1000 / 60) % 60);
-            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-            var days = Math.floor(t / (1000 * 60 * 60 * 24));
-
-            var time = "";
-            if (t < 0) {
-                time = "Passed";
-            } else if (days > 0) {
-                time += days + " days";
-                if (days < 7 && hours > 0) time += ", " + hours + " hours";
-            } else if (hours > 0) {
-                time += hours + " hours, " + minutes + " minutes";
-            } else if (minutes > 0) {
-                time += minutes + " minutes";
-            } else {
-                time += seconds + " seconds";
-            }
-            countdown.remaining = time;
-            countdown.timeremaining = t;
-        }
-
-        $scope.updateCountdown = function() {
-            for (var i = 0; i < $scope.countdowns.value.length; i++) {
-                var countdown = $scope.countdowns.value[i];
-                $scope.formatDate(countdown);
-            }
-        }
         $interval($scope.updateCountdown, 1000);
 
         $scope.createNew = function() {
@@ -84,49 +55,10 @@ angular.module('portalApp')
             $scope.syncData();
             $scope.portalHelpers.showView('countdownMain.html', 1);
         }
-        if (typeof pouchService.widgetData['countdown'] != 'undefined') {
-            $scope.countdowns.value = pouchService.widgetData['countdown'].find((e) => (e._id == "countdown-countdowns")).value;
-        } else {
-            pouchService.widgetData['countdown'] = [];
-        }
-        $scope.data = pouchService.widgetData['countdown'];
 
-        $scope.syncData = function() {
-            $rootScope.pouchDbLocal.get('countdown-countdowns').then(
-                function(doc) {
-                    doc.value = $scope.countdowns.value;
-                    $rootScope.pouchDbLocal.put(doc).then(function(succ) {
-                        console.log('put success: ', succ);
-                    }, function(fail) {
-                        console.log('put fail: ', fail);
-                    });
-                },
-                function(err) {
-                    if (err.status == 404) {
-                        $rootScope.pouchDbLocal.put({
-                            _id: 'countdown-countdowns',
-                            widget: 'countdown',
-                            value: $scope.countdowns.value
-                        }).then(function(succ) {
-                            console.log('put success: ', succ);
-                        }, function(fail) {
-                            console.log('put fail: ', fail);
-                        });
-                    }
-                }
-            );
-        }
-
-        // watch for changes in data: this allows us to handle changes made on another client
-        $scope.$watch('data', function() {
-            if ($scope.data.length == 0)
-                return;
-            console.log($scope.data)
-            $scope.countdowns.value = $scope.data.find((e) => (e._id == "countdown-countdowns")).value;
-        }, true);
     }])
     // Factory maintains the state of the widget
-    .factory('countdownFactory', ['$http', '$rootScope', '$filter', '$q', function($http, $rootScope, $filter, $q) {
+    .factory('countdownFactory', ['$http', '$rootScope', '$filter', '$q', 'pouchService', function($http, $rootScope, $filter, $q, pouchService) {
 
         var initialized = {
             value: false
@@ -140,13 +72,89 @@ angular.module('portalApp')
             value: null
         };
 
+        function formatDate(countdown) {
+            var t = Date.parse(countdown.deadline) - Date.parse(new Date());
+            var seconds = Math.floor((t / 1000) % 60);
+            var minutes = Math.floor((t / 1000 / 60) % 60);
+            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+            var days = Math.floor(t / (1000 * 60 * 60 * 24));
+
+            var time = "";
+            if (t <= 0) {
+                time = "Passed";
+            } else if (days > 1) {
+                time += days + " days";
+            } else if (days == 1) {
+                time += days + " day";
+            } else if (hours > 1) {
+                time += hours + " hours";
+            } else if (hours == 1) {
+                time += hours + " hour";
+            } else if (minutes > 1) {
+                time += minutes + " minutes";
+            } else if (minutes == 1) {
+                time += minutes + " minute";
+            } else if (seconds > 1) {
+                time += seconds + " seconds";
+            } else {
+                time += seconds + " second";
+            }
+            countdown.remaining = time;
+            countdown.timeremaining = t;
+        }
+
+        var updateCountdown = function() {
+            for (var i = 0; i < countdowns.value.length; i++) {
+                var countdown = countdowns.value[i];
+                formatDate(countdown);
+            }
+        }
         var init = function($scope) {
             if (initialized.value)
                 return;
 
             initialized.value = true;
 
-            // Place your init code here:
+            if (typeof pouchService.widgetData['countdown'] != 'undefined') {
+                $scope.countdowns.value = pouchService.widgetData['countdown'].find((e) => (e._id == "countdown-countdowns")).value;
+            } else {
+                pouchService.widgetData['countdown'] = [];
+            }
+            $scope.data = pouchService.widgetData['countdown'];
+
+            $scope.syncData = function() {
+                $rootScope.pouchDbLocal.get('countdown-countdowns').then(
+                    function(doc) {
+                        doc.value = $scope.countdowns.value;
+                        $rootScope.pouchDbLocal.put(doc).then(function(succ) {
+                            console.log('put success: ', succ);
+                        }, function(fail) {
+                            console.log('put fail: ', fail);
+                        });
+                    },
+                    function(err) {
+                        if (err.status == 404) {
+                            $rootScope.pouchDbLocal.put({
+                                _id: 'countdown-countdowns',
+                                widget: 'countdown',
+                                value: $scope.countdowns.value
+                            }).then(function(succ) {
+                                console.log('put success: ', succ);
+                            }, function(fail) {
+                                console.log('put fail: ', fail);
+                            });
+                        }
+                    }
+                );
+            }
+
+            // watch for changes in data: this allows us to handle changes made on another client
+            $scope.$watch('data', function() {
+                if ($scope.data.length == 0)
+                    return;
+                console.log($scope.data)
+                $scope.countdowns.value = $scope.data.find((e) => (e._id == "countdown-countdowns")).value;
+            }, true);
 
             countdowns.value = [];
         }
@@ -156,7 +164,8 @@ angular.module('portalApp')
         return {
             init: init,
             detailsItem: detailsItem,
-            countdowns: countdowns
+            countdowns: countdowns,
+            updateCountdown: updateCountdown,
         };
 
     }]);
