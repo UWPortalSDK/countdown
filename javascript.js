@@ -31,7 +31,9 @@ angular.module('portalApp')
             $scope.portalHelpers.showView('countdownDetails.html', 2);
         }
         $scope.toggleFavorite = function(item) {
-            item.favorite = item.favorite ? false : true;
+            var countdown = $scope.countdowns.value.find((e)=>(e.id==item.id));
+            countdown.favorite = countdown.favorite ? false : true;
+            $scope.syncData();
         }
         $scope.editCountdown = function(item) {
             $scope.portalHelpers.showView('countdownEdit.html', 2);
@@ -39,14 +41,17 @@ angular.module('portalApp')
             $scope.countdownEdit.deadline = new Date(item.deadline);
         }
         $scope.saveEdit = function(item) {
-          	Object.assign($scope.detailsItem.value, $scope.countdownEdit);
-            $scope.portalHelpers.showView('countdownDetails.html', 2);
+            Object.assign($scope.detailsItem.value, $scope.countdownEdit)
+            $scope.syncData();
+            $scope.portalHelpers.closeLastView();
+            $scope.showDetails(item);
         };
         $scope.cancelEdit = function(item) {
             $scope.portalHelpers.showView('countdownDetails.html', 2);
         };
         $scope.deleteCountdown = function(item) {
             $scope.countdowns.value.splice($scope.countdowns.value.indexOf(item), 1);
+            $scope.syncData();
             $scope.portalHelpers.showView('countdownMain.html', 1);
         }
 
@@ -148,6 +153,7 @@ angular.module('portalApp')
                     return;
                 console.log($scope.data)
                 $scope.countdowns.value = $scope.data.find((e) => (e._id == "countdown-countdowns")).value;
+                $scope.detailsItem.value = $scope.countdowns.value.find((e)=>(e.id == $scope.detailsItem.value.id));
             }, true);
 
             countdowns.value = [];
