@@ -15,8 +15,8 @@ angular.module('portalApp')
         // Show main view in the first column
         $scope.portalHelpers.showView('countdownMain.html', 1);
 
-        $scope.formatDate = function(deadline) {
-            var t = Date.parse(deadline) - Date.parse(new Date());
+        $scope.formatDate = function(countdown) {
+            var t = Date.parse(countdown.deadline) - Date.parse(new Date());
             var seconds = Math.floor((t / 1000) % 60);
             var minutes = Math.floor((t / 1000 / 60) % 60);
             var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
@@ -29,29 +29,34 @@ angular.module('portalApp')
                 time += days + " days";
                 if (days < 7 && hours > 0) time += ", " + hours + " hours";
             } else if (hours > 0) {
-                time += hours + " hours," + minutes + " minutes";
+                time += hours + " hours, " + minutes + " minutes";
             } else if (minutes > 0) {
                 time += minutes + " minutes";
             } else {
                 time += seconds + " seconds";
             }
-            return time;
+            countdown.remaining = time;
+            countdown.timeremaining = t;
         }
 
         $scope.updateCountdown = function() {
             for (var i = 0; i < $scope.countdowns.value.length; i++) {
                 var countdown = $scope.countdowns.value[i];
-                countdown.remaining = $scope.formatDate(countdown.deadline);
+                $scope.formatDate(countdown);
             }
         }
         $interval($scope.updateCountdown, 1000);
     
-    	$scope.createNew = function(){
+        $scope.createNew = function(){
             $scope.portalHelpers.showView('countdownNew.html', 2);
         }
-        // This function gets called when user clicks an item in the list
+        $scope.createCountdown = function(item){
+            item.id = Date.now();
+            $scope.countdowns.value.push(item);
+            $scope.syncData();
+            $scope.portalHelpers.showView('countdownMain.html', 1);
+        }
         $scope.showDetails = function(item) {
-            // Make the item that user clicked available to the template
             $scope.detailsItem.value = item;
             $scope.portalHelpers.showView('countdownDetails.html', 2);
         }
@@ -59,11 +64,24 @@ angular.module('portalApp')
             item.favorite = item.favorite ? false : true;
             $scope.syncData();
         }
-        $scope.createCountdown = function(item){
-            $scope.countdowns.value.push(item);
-            $scope.syncData();
-            $scope.portalHelpers.showView('countdownMain.html', 1);
+		$scope.editCountdown = function(item){
+            $scope.portalHelpers.showView('countdownEdit.html', 2);
+            $scope.editCountdown={
+                id: item.id,
+                name: item.name,
+                deadline: new Date(item.deadline),           
+            }
         }
+        $scope.saveEdit = function(item){
+            $scope.countdowns.value.splice($scope.countdowns.value.findIndex((x)=>(x.id==item.id)), 1, item);
+            $scope.detailsItem.value = item;
+            $scope.syncData();
+           	$scope.portalHelpers.showView('countdownDetails.html', 2);
+        };
+   		$scope.cancelEdit = function(item){
+            $scope.editCountdown = {};
+            $scope.portalHelpers.showView('countdownDetails.html', 2);
+        };
 		$scope.deleteCountdown = function(item){
             $scope.countdowns.value.splice($scope.countdowns.value.indexOf(item),1);
             $scope.syncData();
