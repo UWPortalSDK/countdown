@@ -32,27 +32,21 @@ angular.module('portalApp')
         }
         $scope.toggleFavorite = function(item) {
             item.favorite = item.favorite ? false : true;
-            $scope.syncData();
         }
         $scope.editCountdown = function(item) {
             $scope.portalHelpers.showView('countdownEdit.html', 2);
-            $scope.original = Object.assign({}, item);
-            $scope.countdownEdit = item;
+            $scope.countdownEdit = Object.assign({}, item);
             $scope.countdownEdit.deadline = new Date(item.deadline);
         }
         $scope.saveEdit = function(item) {
-            var index = $scope.countdowns.value.findIndex((x) => (x.id == item.id));
-            $scope.countdowns.value.splice(index, 1, item);
-            $scope.showDetails(item);
-            $scope.syncData();
+          	Object.assign($scope.detailsItem.value, $scope.countdownEdit);
+            $scope.portalHelpers.showView('countdownDetails.html', 2);
         };
         $scope.cancelEdit = function(item) {
-            Object.assign($scope.countdownEdit, $scope.original);
             $scope.portalHelpers.showView('countdownDetails.html', 2);
         };
         $scope.deleteCountdown = function(item) {
             $scope.countdowns.value.splice($scope.countdowns.value.indexOf(item), 1);
-            $scope.syncData();
             $scope.portalHelpers.showView('countdownMain.html', 1);
         }
 
@@ -63,7 +57,6 @@ angular.module('portalApp')
         var initialized = {
             value: false
         };
-
 
         var detailsItem = {
             value: null
@@ -123,6 +116,7 @@ angular.module('portalApp')
             $scope.data = pouchService.widgetData['countdown'];
 
             $scope.syncData = function() {
+                
                 $rootScope.pouchDbLocal.get('countdown-countdowns').then(
                     function(doc) {
                         doc.value = $scope.countdowns.value;
