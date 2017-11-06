@@ -58,7 +58,7 @@
 <script type="text/ng-template" id="countdownEdit.html">
     <widget-row>
         <widget-cell>
-            <h2>Editing: {{editCountdown.name}}</h2>
+            <h2>Editing: {{countdownEdit.name}}</h2>
         </widget-cell>
     </widget-row>
 
@@ -67,19 +67,19 @@
             <form onsubmit="false">
                 <div class="form-group form-group-lg">
                     <label for="countdownName">Name</label>
-                    <input type="text" ng-model="editCountdown.name" class="form-control" id="countdownName" placeholder="Name" />
+                    <input type="text" ng-model="countdownEdit.name" class="form-control" id="countdownName" placeholder="Name" />
                 </div>
                 <div class="form-group">
                     <label for="countdownDate">Date</label>
-                    <input type="date" ng-model="editCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+                    <input type="date" ng-model="countdownEdit.deadline" class="form-control" id="countdownDate" placeholder="Date" />
                 </div>
                 <div class="form-group">
                     <label for="countdownTime">Time</label>
-                    <input type="time" ng-model="editCountdown.deadline" class="form-control" id="countdownTime" placeholder="Time" />
+                    <input type="time" ng-model="countdownEdit.deadline" class="form-control" id="countdownTime" placeholder="Time" />
                 </div>
                 <div class="form-group">
-                    <button type="submit" ng-click="saveEdit(editCountdown)" class="btn btn-success">Save</button>
-                    <button type="submit" ng-click="cancelEdit()" class="btn btn-danger">Cancel</button>
+                    <button type="submit" ng-click="saveEdit(countdownEdit)" class="btn btn-success">Save</button>
+                    <button type="button" ng-click="cancelEdit(countdownEdit)" class="btn btn-danger">Cancel</button>
                 </div>
             </form>
         </widget-cell>
