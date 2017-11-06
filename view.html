@@ -1,8 +1,8 @@
-<!-- Primary template that will get shown when widget loads -->
+<!-- Main View -->
 <script type="text/ng-template" id="countdownMain.html">
-    <widget-row>
-        <widget-cell ng-repeat="item in countdowns.value | filter: {favorite: true}" clickable ng-click="showDetails(item)">
-            <h2>{{item.remaining}}</h2> {{item.name}}
+    <widget-row ng-repeat="item in countdowns.value | filter: {favorite: true} | orderBy : 'timeremaining' track by item.id" clickable ng-click="showDetails(item)">
+        <widget-cell fill>
+            <h2>{{item.remaining}}</h2> Until {{item.name}}
         </widget-cell>
     </widget-row>
     <wr>
@@ -12,7 +12,7 @@
             </div>
         </wc>
     </wr>
-    <widget-row ng-repeat="item in countdowns.value" clickable ng-click="showDetails(item)">
+    <widget-row ng-repeat="item in countdowns.value | orderBy : 'timeremaining' track by item.id" clickable ng-click="showDetails(item)">
         <widget-cell fill>
             <div class="itemName">{{item.name}}</div>
             <div class="pDetails">{{item.remaining}}</div>
@@ -23,6 +23,7 @@
     </widget-row>
 </script>
 
+<!-- New Countdown View -->
 <script type="text/ng-template" id="countdownNew.html">
     <widget-row>
         <widget-cell>
@@ -32,31 +33,67 @@
 
     <widget-row>
         <widget-cell>
-            <div class="form-group">
-                <label for="countdownName">Name</label>
-                <input type="text" ng-model="newCountdown.name" class="form-control" id="countdownName" placeholder="Name" />
-            </div>
-            <div class="form-group">
-                <label for="countdownDate">Date</label>
-                <input type="date" ng-model="newCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
-            </div>
-            <div class="form-group">
-                <label for="countdownTime">Time</label>
-                <input type="time" ng-model="newCountdown.deadline" class="form-control" id="countdownTime" placeholder="Time" />
-            </div>
-            <div class="form-group">
-                <button ng-click="createCountdown(newCountdown)" class="btn btn-primary">Create</button>
-            </div>
+            <form onsubmit="false">
+                <div class="form-group form-group-lg">
+                    <label for="countdownName">Name</label>
+                    <input type="text" ng-model="newCountdown.name" class="form-control" id="countdownName" placeholder="Name" />
+                </div>
+                <div class="form-group">
+                    <label for="countdownDate">Date</label>
+                    <input type="date" ng-model="newCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+                </div>
+                <div class="form-group">
+                    <label for="countdownTime">Time</label>
+                    <input type="time" ng-model="newCountdown.deadline" class="form-control" id="countdownTime" placeholder="Time" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" ng-click="createCountdown(newCountdown)" class="btn btn-primary">Create</button>
+                </div>
+            </form>
         </widget-cell>
     </widget-row>
 </script>
 
-<!-- This template gets shown when user clicks one of the items in the list -->
+<!-- Edit Countdown View -->
+<script type="text/ng-template" id="countdownEdit.html">
+    <widget-row>
+        <widget-cell>
+            <h2>Editing: {{editCountdown.name}}</h2>
+        </widget-cell>
+    </widget-row>
+
+    <widget-row>
+        <widget-cell>
+            <form onsubmit="false">
+                <div class="form-group form-group-lg">
+                    <label for="countdownName">Name</label>
+                    <input type="text" ng-model="editCountdown.name" class="form-control" id="countdownName" placeholder="Name" />
+                </div>
+                <div class="form-group">
+                    <label for="countdownDate">Date</label>
+                    <input type="date" ng-model="editCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+                </div>
+                <div class="form-group">
+                    <label for="countdownTime">Time</label>
+                    <input type="time" ng-model="editCountdown.deadline" class="form-control" id="countdownTime" placeholder="Time" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" ng-click="saveEdit(editCountdown)" class="btn btn-success">Save</button>
+                    <button type="submit" ng-click="cancelEdit()" class="btn btn-danger">Cancel</button>
+                </div>
+            </form>
+        </widget-cell>
+    </widget-row>
+</script>
+
+<!-- Detail View -->
 <script type="text/ng-template" id="countdownDetails.html">
-    <!-- 'wr' and 'wc' are short for 'widget-row' and 'widget-cell' -->
     <wr>
         <wc fill>
             <h2>{{detailsItem.value.name}}</h2>
+        </wc>
+        <wc clickable ng-click="editCountdown(detailsItem.value)">
+            <widget-icon name="edit"></widget-icon>
         </wc>
         <wc clickable ng-click="deleteCountdown(detailsItem.value)">
             <widget-icon name="trash-empty"></widget-icon>
@@ -74,7 +111,7 @@
     </wr>
     <wr>
         <wc>
-            {{detailsItem.value.deadline}}
+            {{detailsItem.value.deadline | momentDate : 'MMMM DD YYYY, h:mm'}}
         </wc>
     </wr>
 </script>
