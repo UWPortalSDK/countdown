@@ -1,0 +1,6 @@
+.input-group i{
+ 	font-size: inherit !important;   
+}
+.uib-datepicker{
+	z-index:99999
+}
