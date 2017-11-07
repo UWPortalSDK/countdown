@@ -2,7 +2,6 @@ angular.module('portalApp')
 
 // Widget controller - runs every time widget is shown
 .controller('countdownCtrl', ['$scope', '$http', '$interval', '$q', 'countdownFactory', '$rootScope', function($scope, $http, $interval, $q, countdownFactory, $rootScope) {
-
         // Import variables and functions from service
         $scope.countdowns = countdownFactory.countdowns;
         $scope.detailsItem = countdownFactory.detailsItem;
