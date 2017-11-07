@@ -12,7 +12,7 @@
             </wc>
         </wr>
         <widget-searching>
-            <widget-list list="item in searchResults | orderBy : 'timeremaining' | filter : {favorite: favorites?true:''} track by item.id" show-items="5">
+            <widget-list list="item in searchResults | orderBy : 'timeremaining' | filter : {favorite: favorites?true:undefined} track by item.id" show-items="5">
                 <widget-row>
                     <wc clickable ng-click="toggleFavorite(item)">
                         <widget-icon name="{{item.favorite?'star':'star-empty'}}"></widget-icon>
@@ -30,8 +30,8 @@
             </widget-list>
         </widget-searching>
         <widget-not-searching>
-
-            <widget-list list="item in countdowns.value | orderBy : 'timeremaining' | filter : {favorite: favorites?true:''} track by item.id" show-items="5">
+            
+            <widget-list list="item in countdowns.value | orderBy : 'timeremaining' | filter : {favorite: favorites?true:undefined} track by item.id" show-items="5">
                 <widget-row>
                     <wc clickable ng-click="toggleFavorite(item)">
                         <widget-icon name="{{item.favorite?'star':'star-empty'}}"></widget-icon>
@@ -68,12 +68,6 @@
                 </div>
                 <div class="form-group">
                     <label for="countdownDate">Date</label>
-                    <p class="input-group">
-                        <input type="text" class="form-control" uib-datepicker-popup ng-model="newCountdown.date"/>
-                        <span class="input-group-btn">
-            			<button type="button" class="btn btn-default" ng-click="pickDate?"><widget-icon name="calendar"></widget-icon></button>
-          </span>
-                    </p>
                     <input type="date" ng-model="newCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
                 </div>
                 <div class="form-group">
