@@ -19,6 +19,9 @@ angular.module('portalApp')
 
         $scope.createNew = function() {
             $scope.portalHelpers.showView('countdownNew.html', 2);
+            $scope.newCountdown= {
+                deadline: new Date(Date.now())
+            }
         }
         $scope.createCountdown = function(item) {
             item.id = Date.now();
