@@ -1,29 +1,54 @@
 <!-- Main View -->
 <script type="text/ng-template" id="countdownMain.html">
-    <widget-row ng-repeat="item in countdowns.value | filter: {favorite: true} | orderBy : 'timeremaining' track by item.id" clickable ng-click="showDetails(item)">
-        <widget-cell fill>
-            <h2>{{item.remaining}}</h2> Until {{item.name}}
-        </widget-cell>
-        <widget-cell>
-            <widget-icon name="angle-right"></widget-icon>
-        </widget-cell>
-    </widget-row>
-    <wr>
-        <wc fill>
-            <div ng-click="createNew()" class="btn btn-primary">
-                Create New Countdown
-            </div>
-        </wc>
-    </wr>
-    <widget-row ng-repeat="item in countdowns.value | orderBy : 'timeremaining' track by item.id" clickable ng-click="showDetails(item)">
-        <widget-cell fill>
-            <div class="itemName">{{item.name}}</div>
-            <div class="pDetails">{{item.remaining}}</div>
-        </widget-cell>
-        <widget-cell>
-            <widget-icon name="angle-right"></widget-icon>
-        </widget-cell>
-    </widget-row>
+    <widget-search label="Search" placeholder="Search for a countdown timer..." search-results-title="Search Results:" data="countdowns" min-char="0" fields="['name','deadline']">
+        <wr>
+            <wc fill>
+                <div ng-click="createNew()" class="btn btn-primary">
+                    Create New Countdown
+                </div>
+                <div ng-click="favorites = !favorites" ng-class="favorites?'btn-default':'btn-primary'" class="btn ">
+                    Favorites ({{getFavoriteCount()}})
+                </div>
+            </wc>
+        </wr>
+        <widget-searching>
+            <widget-list list="item in searchResults | orderBy : 'timeremaining' | filter : {favorite: favorites?true:''} track by item.id" show-items="5">
+                <widget-row>
+                    <wc clickable ng-click="toggleFavorite(item)">
+                        <widget-icon name="{{item.favorite?'star':'star-empty'}}"></widget-icon>
+                    </wc>
+                    <widget-cell fill clickable ng-click="showDetails(item)">
+                        <wc fill>
+                            <div class="itemName">{{item.remaining}}</div>
+                            <div>Until {{item.name}}</div>
+                        </wc>
+                        <widget-cell>
+                            <widget-icon name="angle-right"></widget-icon>
+                        </widget-cell>
+                    </widget-cell>
+                </widget-row>
+            </widget-list>
+        </widget-searching>
+        <widget-not-searching>
+            
+            <widget-list list="item in countdowns.value | orderBy : 'timeremaining' | filter : {favorite: favorites?true:''} track by item.id" show-items="5">
+                <widget-row>
+                    <wc clickable ng-click="toggleFavorite(item)">
+                        <widget-icon name="{{item.favorite?'star':'star-empty'}}"></widget-icon>
+                    </wc>
+                    <widget-cell fill clickable ng-click="showDetails(item)">
+                        <wc fill>
+                            <div class="itemName">{{item.remaining}}</div>
+                            <div>Until {{item.name}}</div>
+                        </wc>
+                        <widget-cell>
+                            <widget-icon name="angle-right"></widget-icon>
+                        </widget-cell>
+                    </widget-cell>
+                </widget-row>
+            </widget-list>
+        </widget-not-searching>
+    </widget-search>
 </script>
 
 <!-- New Countdown View -->
