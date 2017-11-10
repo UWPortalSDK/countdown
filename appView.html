@@ -1,24 +1,55 @@
 <!-- Primary template that will get shown when widget loads -->
-<script type="text/ng-template" id="countdownMain.html"> 
-	<div class="item" ng-repeat="item in countdowns.value | filter: {favorite: true}" clickable ng-click="showDetails(item)">
-		<h2>{{item.remaining}}</h2> {{item.name}}
-	</div>
-		
-	<div class="item" ng-repeat="item in countdowns.value" clickable ng-click="showDetails(item)">
-        <span class="itemName">{{item.name}}</span>
-		<p>
-            <span class="pDetails">{{item.remaining}}</span>
-		</p>
-	
-		 <i class="ion-chevron-right icon"></i>
-	</div>
+<script type="text/ng-template" id="countdownMain.html">
+    <widget-search label="Search" placeholder="Search for a countdown timer..." search-results-title="Search Results:" data="countdowns" min-char="0" fields="['name','deadline']">
+        <div class="item">
+            <span>
+                <button class="button button-positive" ng-click="createNew()">
+                    Create New Countdown
+                </button>
+                <button class="button" ng-click="favorites = !favorites" ng-class="favorites?'button-stable':'button-positive'">
+                    Favorites ({{getFavoriteCount()}})
+                </button>
+            </span>
+        </div>
+        <widget-searching>
+            <widget-list list="item in searchResults.value | orderBy : 'timeremaining' | filter : {favorite: favorites?true:undefined} track by item.id" show-items="5" render="true">
+                <div class="item item-icon-right" ng-click="showDetails(item)">
+                    <strong>{{item.remaining}}</strong>
+                    <p>{{item.favorite?'&#9733; ':''}}{{item.name}}</p>
+                    <i class="icon icon-angle-right"></i>
+                </div>
+            </widget-list>
+        </widget-searching>
+        <widget-not-searching>
+            <widget-list list="item in countdowns.value | orderBy : 'timeremaining' | filter : {favorite: favorites?true:undefined} track by item.id" show-items="5" render="true">
+                <div class="item item-icon-right" ng-click="showDetails(item)">
+                    <strong>{{item.remaining}}</strong>
+                    <p>{{item.favorite?'&#9733; ':''}}{{item.name}}</p>
+                    <i class="icon icon-angle-right"></i>
+                </div>
+            </widget-list>
+        </widget-not-searching>
+    </widget-search>
 </script>
 
 <!-- This template gets shown when user clicks one of the items in the list -->
-<script type="text/ng-template" id="countdownDetails.html"> 
-	<div class="item">
-		<h2>{{detailsItem.value.title}}</h2>
-		<p><span ng-repeat= "tag in detailsItem.value.tags">[{{tag}}]</span> </p>
-	</div>
-	<div class="item item-text-wrap"><p>{{detailsItem.value.details}}</p></div>
+<script type="text/ng-template" id="countdownDetails.html">
+    <div class="item item-divider">
+        <strong>{{detailsItem.value.name}}</strong>
+        <span class="controls">
+        	<i class="icon icon-lg icon-edit" ng-click="editCountdown(detailsItem.value)"></i>
+        	<i class="icon icon-lg icon-cancel-circled" ng-click="deleteCountdown(detailsItem.value)"></i>
+        	<i class="icon icon-lg" ng-class="detailsItem.value.favorite?'icon-star':'icon-star-empty'" ng-click="toggleFavorite(detailsItem.value)"></i>
+        </span>
+    </div>
+    <div class="item item-text-wrap">
+        <p>
+            {{detailsItem.value.remaining}}
+        </p>
+    </div>
+    <div class="item item-text-wrap">
+        <p>
+            {{detailsItem.value.deadline | momentDate : 'MMMM DD YYYY, h:mm'}}
+        </p>
+    </div>
 </script>
