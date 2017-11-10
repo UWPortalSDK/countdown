@@ -1,4 +1,4 @@
-<!-- Primary template that will get shown when widget loads -->
+<!-- Main View -->
 <script type="text/ng-template" id="countdownMain.html">
     <widget-search label="Search" placeholder="Search for a countdown timer..." search-results-title="Search Results:" data="countdowns" min-char="0" fields="['name','deadline']">
         <div class="item">
@@ -32,7 +32,7 @@
     </widget-search>
 </script>
 
-<!-- This template gets shown when user clicks one of the items in the list -->
+<!-- Details View -->
 <script type="text/ng-template" id="countdownDetails.html">
     <div class="item item-divider">
         <strong>{{detailsItem.value.name}}</strong>
@@ -51,5 +51,53 @@
         <p>
             {{detailsItem.value.deadline | momentDate : 'MMMM DD YYYY, h:mm'}}
         </p>
+    </div>
+</script>
+
+<!-- New Countdown View -->
+<script type="text/ng-template" id="countdownNew.html">
+    <div class="item item-divider">
+        Create New Countdown
+    </div>
+    <div class="item">
+        <form class="list" onsubmit="false">
+            <label class="item item-input">
+                <input type="text" ng-model="newCountdown.name" class="form-control" id="countdownName" placeholder="Name" />
+            </label>
+            <label class="item item-input">
+                <input type="date" ng-model="newCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+            </label>
+            <label class="item item-input">
+                <label for="countdownTime">Time</label>
+                <input type="time" ng-model="newCountdown.deadline" class="form-control" id="countdownTime" placeholder="Time" />
+            </label>
+            <button type="submit" ng-click="createCountdown(newCountdown)" class="button button-block button-balanced">Save</button>
+        </form>
+    </div>
+</script>
+
+<!-- Edit Countdown View -->
+<script type="text/ng-template" id="countdownEdit.html">
+    <div class="item item-divider">
+        Editing: {{countdownEdit.name}}
+    </div>
+
+    <div class="item">
+        <form class="list" onsubmit="false">
+            <label class="item item-input">
+                <input type="text" ng-model="countdownEdit.name" class="form-control" id="countdownName" placeholder="Name" />
+            </label>
+            <label class="item item-input">
+                <input type="date" ng-model="countdownEdit.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+            </label>
+            <label class="item item-input">
+                <label for="countdownTime">Time</label>
+                <input type="time" ng-model="countdownEdit.deadline" class="form-control" id="countdownTime" placeholder="Time" />
+            </label>
+            <div class="button-bar">
+                <button type="submit" ng-click="saveEdit(countdownEdit)" class="button button-balanced">Save</button>
+                <button type="button" ng-click="cancelEdit(countdownEdit)" class="button button-assertive">Cancel</button>
+            </div>
+        </form>
     </div>
 </script>
