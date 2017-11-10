@@ -7,6 +7,7 @@ angular.module('portalApp')
         $scope.countdowns = countdownFactory.countdowns;
         $scope.detailsItem = countdownFactory.detailsItem;
         $scope.updateCountdown = countdownFactory.updateCountdown;
+        $scope.formatDate = countdownFactory.formatDate;
 
 
         // initialize the service
@@ -160,7 +161,10 @@ angular.module('portalApp')
                 $scope.countdowns.value = $scope.data.find((e) => (e._id == "countdown-countdowns")).value;
                 if($scope.detailsItem.value == null) $scope.detailsItem.value = $scope.countdowns.value[0];
                 $scope.detailsItem.value = $scope.countdowns.value.find((e)=>(e.id == $scope.detailsItem.value.id));
-                
+                for (var i = 0; i < countdowns.value.length; i++) {
+                    var countdown = countdowns.value[i];
+                    formatDate(countdown);
+                }
             }, true);
 
             countdowns.value = [];
@@ -173,6 +177,7 @@ angular.module('portalApp')
             detailsItem: detailsItem,
             countdowns: countdowns,
             updateCountdown: updateCountdown,
+            formatDate: formatDate,
         };
 
     }]);
