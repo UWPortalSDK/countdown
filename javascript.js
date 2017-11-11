@@ -27,8 +27,8 @@ angular.module('portalApp')
         $scope.createCountdown = function(item) {
             item.id = Date.now();
             $scope.countdowns.value.push(item);
-            $scope.syncData();
             $scope.portalHelpers.showView('countdownMain.html', 1);
+            $scope.syncData();
         }
         $scope.showDetails = function(item) {
             $scope.detailsItem.value = item;
@@ -48,9 +48,9 @@ angular.module('portalApp')
             $scope.countdownEdit.deadline = new Date(item.deadline);
         }
         $scope.saveEdit = function(item) {
-            Object.assign($scope.detailsItem.value, $scope.countdownEdit)
-            $scope.syncData();
+            Object.assign($scope.detailsItem.value, $scope.countdownEdit);
             $scope.showDetails(item);
+            $scope.syncData();
         };
         $scope.cancelEdit = function(item) {
             $scope.portalHelpers.showView('countdownDetails.html', 2);
@@ -158,9 +158,9 @@ angular.module('portalApp')
                 if ($scope.data.length == 0)
                     return;
                 console.log($scope.data)
-                $scope.countdowns.value = $scope.data.find((e) => (e._id == "countdown-countdowns")).value;
+                $scope.countdowns.value = $scope.data.find(function(e){return (e._id == "countdown-countdowns")}).value;
                 if($scope.detailsItem.value == null) $scope.detailsItem.value = $scope.countdowns.value[0];
-                $scope.detailsItem.value = $scope.countdowns.value.find((e)=>(e.id == $scope.detailsItem.value.id));
+                $scope.detailsItem.value = $scope.countdowns.value.find(function(e){return (e.id == $scope.detailsItem.value.id)});
                 for (var i = 0; i < countdowns.value.length; i++) {
                     var countdown = countdowns.value[i];
                     formatDate(countdown);
