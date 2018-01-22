@@ -1,16 +1,19 @@
 <!-- Main View -->
 <script type="text/ng-template" id="countdownMain.html">
-    <widget-search label="Search" placeholder="Search for a countdown timer..." search-results-title="Search Results:" data="countdowns" min-char="0" fields="['name','deadline']">
-        <wr>
-            <wc fill>
-                <div ng-click="createNew()" class="btn btn-primary">
-                    Create New Countdown
-                </div>
-                <div ng-click="favorites = !favorites" ng-class="favorites?'btn-default':'btn-primary'" class="btn ">
-                    Favorites ({{getFavoriteCount()}})
-                </div>
-            </wc>
-        </wr>
+    
+    <wr>
+        <wc fill>
+            <p>Create countdown timers for any assignment, event, or task.</p> 
+            <div ng-click="createNew()" class="btn btn-primary">
+                Create New Countdown
+            </div>
+            <div ng-click="favorites = !favorites" ng-class="favorites?'btn-default':'btn-primary'" class="btn ">
+                Favorites ({{getFavoriteCount()}})
+            </div>
+        </wc>
+    </wr>
+    <widget-search label="Search" placeholder="Search for a countdown timer..." search-results-title="Search Results:" data="countdowns" min-char="0" fields="['name','deadline']" ng-show="countdowns.value.length > 0">
+        
         <widget-searching>
             <widget-list list="item in searchResults | orderBy : 'timeremaining' | filter : {favorite: favorites?true:undefined} track by item.id" show-items="5">
                 <widget-row>
