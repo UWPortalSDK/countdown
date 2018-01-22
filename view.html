@@ -76,6 +76,44 @@
                 </div>
                 <div class="form-group">
                     <button type="submit" ng-click="createCountdown(newCountdown)" class="btn btn-primary">Create</button>
+                    <button type="submit" ng-click="newFromSched()" class="btn btn-primary">Create from schedule</button>
+                </div>
+            </form>
+        </widget-cell>
+    </widget-row>
+</script>
+
+
+<!-- New From Sched View -->
+<script type="text/ng-template" id="newFromSched.html">
+    <widget-row>
+        <widget-cell>
+            <h2>Create New Countdown</h2>
+        </widget-cell>
+    </widget-row>
+
+    <widget-row>
+        <widget-cell>
+            <form onsubmit="false">
+                <div class="form-group form-group-lg">
+                    <label for="countdownName">Name</label>
+                    <input type="text" ng-model="newCountdown.name" class="form-control" id="countdownName" placeholder="Name" />
+                </div>
+                <div class="form-group">
+                    <label for="newFromType">Type</label><br>
+                      <div class="btn-group" uib-dropdown is-open="status.isopen">
+                      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
+                        Button dropdown <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                        <li role="menuitem"><a href="#">Exams</a></li>
+                        <li role="menuitem"><a href="#">Classes</a></li>
+                        <li role="menuitem"><a href="#">Calendar Items</a></li>
+                      </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" ng-click="createCountdown(newCountdown)" class="btn btn-primary">Create</button>
                 </div>
             </form>
         </widget-cell>
