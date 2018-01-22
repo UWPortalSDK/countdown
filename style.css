@@ -1,0 +1,12 @@
+.input-group i{
+ 	font-size: inherit !important;   
+}
+.uib-datepicker{
+	z-index:99999
+}
+.controls{
+ 	float: right;   
+}
+.icon-lg{
+ 	font-size: 24px   
+}

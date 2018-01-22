@@ -1,16 +1,19 @@
 <!-- Main View -->
 <script type="text/ng-template" id="countdownMain.html">
-    <widget-search label="Search" placeholder="Search for a countdown timer..." search-results-title="Search Results:" data="countdowns" min-char="0" fields="['name','deadline']">
-        <wr>
-            <wc fill>
-                <div ng-click="createNew()" class="btn btn-primary">
-                    Create New Countdown
-                </div>
-                <div ng-click="favorites = !favorites" ng-class="favorites?'btn-default':'btn-primary'" class="btn ">
-                    Favorites ({{getFavoriteCount()}})
-                </div>
-            </wc>
-        </wr>
+    
+    <wr>
+        <wc fill>
+            <p>Create countdown timers for any assignment, event, or task.</p> 
+            <div ng-click="createNew()" class="btn btn-primary">
+                Create New Countdown
+            </div>
+            <div ng-click="favorites = !favorites" ng-class="favorites?'btn-default':'btn-primary'" class="btn ">
+                Favorites ({{getFavoriteCount()}})
+            </div>
+        </wc>
+    </wr>
+    <widget-search label="Search" placeholder="Search for a countdown timer..." search-results-title="Search Results:" data="countdowns" min-char="0" fields="['name','deadline']" ng-show="countdowns.value.length > 0">
+        
         <widget-searching>
             <widget-list list="item in searchResults | orderBy : 'timeremaining' | filter : {favorite: favorites?true:undefined} track by item.id" show-items="5">
                 <widget-row>
@@ -20,7 +23,7 @@
                     <widget-cell fill clickable ng-click="showDetails(item)">
                         <wc fill>
                             <div class="itemName">{{item.remaining}}</div>
-                            <div>Until {{item.name}}</div>
+                            <div>{{item.name}}</div>
                         </wc>
                         <widget-cell>
                             <widget-icon name="angle-right"></widget-icon>
@@ -30,7 +33,7 @@
             </widget-list>
         </widget-searching>
         <widget-not-searching>
-            
+
             <widget-list list="item in countdowns.value | orderBy : 'timeremaining' | filter : {favorite: favorites?true:undefined} track by item.id" show-items="5">
                 <widget-row>
                     <wc clickable ng-click="toggleFavorite(item)">
@@ -39,7 +42,7 @@
                     <widget-cell fill clickable ng-click="showDetails(item)">
                         <wc fill>
                             <div class="itemName">{{item.remaining}}</div>
-                            <div>Until {{item.name}}</div>
+                            <div>{{item.name}}</div>
                         </wc>
                         <widget-cell>
                             <widget-icon name="angle-right"></widget-icon>
@@ -66,13 +69,20 @@
                     <label for="countdownName">Name</label>
                     <input type="text" ng-model="newCountdown.name" class="form-control" id="countdownName" placeholder="Name" />
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="width:50%">
                     <label for="countdownDate">Date</label>
-                    <input type="date" ng-model="newCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+                    <div class="input-group">
+                        <input type="text" uib-datepicker-popup is-open="datePickerOpen" popup-placement="right" ng-model="newCountdown.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+                        <span class="input-group-btn">
+            				<button type="button" class="btn btn-default" ng-click="datePickerOpen=!datePickerOpen">
+                            	<widget-icon name="calendar"></widget-icon>
+                            </button>
+          				</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="countdownTime">Time</label>
-                    <input type="time" ng-model="newCountdown.deadline" class="form-control" id="countdownTime" placeholder="Time" />
+                    <div uib-timepicker ng-model="newCountdown.deadline" id="countdownTime" placeholder="Time"></div>
                 </div>
                 <div class="form-group">
                     <button type="submit" ng-click="createCountdown(newCountdown)" class="btn btn-primary">Create</button>
@@ -116,6 +126,9 @@
                     <button type="submit" ng-click="createCountdown(newCountdown)" class="btn btn-primary">Create</button>
                 </div>
             </form>
+            <div style="height:100px">
+
+            </div>
         </widget-cell>
     </widget-row>
 </script>
@@ -135,13 +148,20 @@
                     <label for="countdownName">Name</label>
                     <input type="text" ng-model="countdownEdit.name" class="form-control" id="countdownName" placeholder="Name" />
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="width:50%">
                     <label for="countdownDate">Date</label>
-                    <input type="date" ng-model="countdownEdit.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+                    <div class="input-group">
+                        <input type="text" uib-datepicker-popup is-open="datePickerOpen" popup-placement="right" ng-model="countdownEdit.deadline" class="form-control" id="countdownDate" placeholder="Date" />
+                        <span class="input-group-btn">
+            				<button type="button" class="btn btn-default" ng-click="datePickerOpen=!datePickerOpen">
+                            	<widget-icon name="calendar"></widget-icon>
+                            </button>
+          				</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="countdownTime">Time</label>
-                    <input type="time" ng-model="countdownEdit.deadline" class="form-control" id="countdownTime" placeholder="Time" />
+                    <div uib-timepicker ng-model="countdownEdit.deadline" id="countdownTime" placeholder="Time"></div>
                 </div>
                 <div class="form-group">
                     <button type="submit" ng-click="saveEdit(countdownEdit)" class="btn btn-success">Save</button>
