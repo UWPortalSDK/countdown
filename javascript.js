@@ -20,6 +20,9 @@ angular.module('portalApp')
         $scope.createNew = function() {
             $scope.portalHelpers.showView('countdownNew.html', 2);
         }
+        $scope.newFromSched = function() {
+            $scope.portalHelpers.showView('newFromSched.html', 2);
+        }
         $scope.createCountdown = function(item) {
             item.id = Date.now();
             $scope.countdowns.value.push(item);
