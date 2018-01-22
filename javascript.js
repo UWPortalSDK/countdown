@@ -9,7 +9,7 @@ angular.module('portalApp')
         $scope.updateCountdown = countdownFactory.updateCountdown;
         $scope.formatDate = countdownFactory.formatDate;
 
-
+        
         // initialize the service
         countdownFactory.init($scope);
 
@@ -28,7 +28,7 @@ angular.module('portalApp')
             item.id = Date.now();
             $scope.countdowns.value.push(item);
             $scope.portalHelpers.showView('countdownMain.html', 1);
-            $scope.syncData();
+            countdownFactory.syncData();
         }
         $scope.showDetails = function(item) {
             $scope.detailsItem.value = item;
@@ -37,7 +37,7 @@ angular.module('portalApp')
         $scope.toggleFavorite = function(item) {
             var countdown = $scope.countdowns.value.find((e)=>(e.id==item.id));
             countdown.favorite = countdown.favorite ? false : true;
-            $scope.syncData();
+            countdownFactory.syncData();
         }
         $scope.getFavoriteCount = function(){
          	return $scope.countdowns.value.reduce((s,e)=>(e.favorite?s+1:s),0);   
@@ -50,14 +50,14 @@ angular.module('portalApp')
         $scope.saveEdit = function(item) {
             Object.assign($scope.detailsItem.value, $scope.countdownEdit);
             $scope.showDetails(item);
-            $scope.syncData();
+            countdownFactory.syncData();
         };
         $scope.cancelEdit = function(item) {
             $scope.portalHelpers.showView('countdownDetails.html', 2);
         };
         $scope.deleteCountdown = function(item) {
             $scope.countdowns.value.splice($scope.countdowns.value.indexOf(item), 1);
-            $scope.syncData();
+            countdownFactory.syncData();
             $scope.portalHelpers.showView('countdownMain.html', 1);
         }
 
@@ -114,25 +114,13 @@ angular.module('portalApp')
                 formatDate(countdown);
             }
         }
-        var init = function($scope) {
-            if (initialized.value)
-                return;
 
-            initialized.value = true;
-
-            if (typeof pouchService.widgetData['countdown'] != 'undefined') {
-                $scope.countdowns.value = pouchService.widgetData['countdown'].find((e) => (e._id == "countdown-countdowns")).value;
-            } else {
-                pouchService.widgetData['countdown'] = [];
-            }
-            $scope.data = pouchService.widgetData['countdown'];
-
-            $scope.syncData = function() {
+        var syncData = function() {
                 $rootScope.pouchDbLocal.get('countdown-countdowns').then(
                     function(doc) {
-                        doc.value = $scope.countdowns.value;
+                        doc.value = countdowns.value;
                         $rootScope.pouchDbLocal.put(doc).then(function(succ) {
-                            console.log('put success: ', succ);
+                            console.log('put success: ', succ, doc);
                         }, function(fail) {
                             console.log('put fail: ', fail);
                         });
@@ -142,7 +130,7 @@ angular.module('portalApp')
                             $rootScope.pouchDbLocal.put({
                                 _id: 'countdown-countdowns',
                                 widget: 'countdown',
-                                value: $scope.countdowns.value
+                                value: countdowns.value
                             }).then(function(succ) {
                                 console.log('put success: ', succ);
                             }, function(fail) {
@@ -151,29 +139,51 @@ angular.module('portalApp')
                         }
                     }
                 );
+            };
+
+
+        var init = function($scope) {
+            if (initialized.value)
+                return;
+
+            initialized.value = true;
+
+            if (typeof pouchService.widgetData['countdown'] != 'undefined') {
+                countdowns.value = pouchService.widgetData['countdown'].find((e) => (e._id == "countdown-countdowns")).value;
+                console.log('$scope.countdowns.value: ', countdowns.value);
+            } else {
+                pouchService.widgetData['countdown'] = [];
             }
 
+            $scope.data = pouchService.widgetData['countdown'];
+
+            //syncData();
+
             // watch for changes in data: this allows us to handle changes made on another client
-            $scope.$watch('data', function() {
-                if ($scope.data.length == 0)
-                    return;
-                console.log($scope.data)
-                $scope.countdowns.value = $scope.data.find(function(e){return (e._id == "countdown-countdowns")}).value;
-                if($scope.detailsItem.value == null) $scope.detailsItem.value = $scope.countdowns.value[0];
-                $scope.detailsItem.value = $scope.countdowns.value.find(function(e){return (e.id == $scope.detailsItem.value.id)});
-                for (var i = 0; i < countdowns.value.length; i++) {
-                    var countdown = countdowns.value[i];
-                    formatDate(countdown);
+            $scope.$watch('data', function(newval,oldval) {
+                console.log("newval,oldval", newval,oldval);
+                if ( newval !== oldval ) {
+                    if ($scope.data.length == 0)
+                        return;
+                    console.log($scope.data);
+                    countdowns.value = $scope.data.find(function(e){return (e._id == "countdown-countdowns")}).value;
+                    if($scope.detailsItem.value == null) $scope.detailsItem.value = $scope.countdowns.value[0];
+                    $scope.detailsItem.value = countdowns.value.find(function(e){return (e.id == $scope.detailsItem.value.id)});
+                    for (var i = 0; i < countdowns.value.length; i++) {
+                        var countdown = countdowns.value[i];
+                        formatDate(countdown);
+                    }
                 }
             }, true);
 
-            countdowns.value = [];
+            
         }
 
 
         // Expose init(), and variables
         return {
             init: init,
+            syncData: syncData,
             detailsItem: detailsItem,
             countdowns: countdowns,
             updateCountdown: updateCountdown,
